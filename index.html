@@ -226,11 +226,7 @@
                 <label>SE-ren Geratzen den Kantitatea:</label>
                 <p id="se_kantitatea" class="resultado-valor">...</p>
             </div>
-            <div class="resultado-item">
-                <label>Produktuaren Etekina Teorikoa:</label>
-                <p id="errendimendu_teorikoa" class="resultado-valor">...</p>
             </div>
-        </div>
         
     </div>
 
@@ -278,7 +274,6 @@
 
             // Parsear Ecuación
             const { erreaktiboak, produktuak } = parseEkuazioa(ekuazioaStr);
-            // El mensaje de error también se mantiene con "orekatuta" para que el usuario sepa que el problema es del balanceo, aunque use la palabra "doituta"
             if (erreaktiboak.length !== 2 || produktuak.length === 0) {
                 document.getElementById('visualizazioa').textContent = 'Errorea: Ekuazio formatu okerra (A + B -> C). Konprobatu ekuazioa doituta dagoela.'; return;
             }
@@ -313,30 +308,23 @@
                 molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
             }
 
-            // 5. CALCULAR RESULTADOS
+            // 5. CALCULAR RESULTADOS (SOLO EXCESO)
             const molakKontsumituRE = (molRL * koefRE) / koefRL;
             const molakSoberanRE = molRE - molakKontsumituRE;
             
             const masaMolarRE = kalkulatuMasaMolarra(formulaRE);
             const masaSoberanRE = molakSoberanRE * (masaMolarRE || 0);
 
+            // 6. OBTENER INFORMACIÓN DEL PRODUCTO PARA VISUALIZACIÓN
             const produktuarenFormula = produktuak[0].formula;
             const koefProduktua = produktuak[0].koefizientea;
-            
-            const masaMolarProduktua = kalkulatuMasaMolarra(produktuarenFormula);
-            
-            if (!masaMolarProduktua) {
-                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra ezin da kalkulatu ${produktuarenFormula}-rentzat.`; return;
-            }
-
             const molakProduktua = (molRL * koefProduktua) / koefRL;
-            const masaProduktua = molakProduktua * masaMolarProduktua;
 
-            // 6. BISTARATU EMAITZAK (Mostrar Resultados)
-            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula);
+            // 7. BISTARATU EMAITZAK (Mostrar Resultados)
+            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, produktuarenFormula);
         }
 
-        // 7. FUNTZIO OSAGARRIAK
+        // 8. FUNTZIO OSAGARRIAK
         
         /**
          * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza y densidad).
@@ -424,8 +412,8 @@
             };
         }
 
-        // FUNCIÓN DE BISTARATZE MEJORADA
-        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
+        // FUNCIÓN DE BISTARATZE MEJORADA (sin rendimiento teórico)
+        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, produktuarenFormula) {
             const format = (num) => num.toFixed(3);
             const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
             const molSoberanStr = format(Math.max(0, molakSoberanRE));
@@ -435,8 +423,6 @@
             document.getElementById('se_izena').textContent = `${formulaRE}`;
             document.getElementById('se_kantitatea').textContent = 
                 molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
-            document.getElementById('errendimendu_teorikoa').textContent = 
-                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
 
             // Generar contenido para la visualización simbólica
             let htmlSimulazioa = `
@@ -452,7 +438,7 @@
                 </div>
                 <div class="simulazio-linea">
                     <span class="simulazio-izena">${produktuarenFormula}</span>
-                    <span class="simulazio-egoera produktua">➡️ SORTUA (${format(molakProduktua)} mol)</span>
+                    <span class="simulazio-egoera produktua">➡️ SORTU DA (Produktua)</span>
                 </div>
             `;
             
