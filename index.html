@@ -78,14 +78,13 @@
             padding: 20px; 
             border-radius: 8px; 
             min-height: 80px; 
-            text-align: center; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
             margin-top: 20px; 
             font-size: 1.1em; 
             color: #666; 
             border: 1px dashed #d81b60; 
+            display: flex; /* Añadido para la nueva estructura */
+            flex-direction: column;
+            gap: 10px;
         }
         .resultado-valor { 
             font-weight: bold; 
@@ -104,6 +103,45 @@
         .input-inline div {
             flex: 1;
         }
+
+        /* ESTILOS PARA LA SIMULACIÓN SIMBÓLICA */
+        .simulazio-linea {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dotted #d81b60;
+            font-weight: bold;
+        }
+        .simulazio-linea:last-child {
+            border-bottom: none;
+        }
+        .simulazio-izena {
+            flex: 1;
+            text-align: left;
+            padding-left: 10px;
+        }
+        .simulazio-egoera {
+            flex: 1;
+            text-align: right;
+            padding-right: 10px;
+        }
+        .agotado {
+            color: #d81b60; /* Rojo/Rosa oscuro */
+            animation: pulse-agotado 1.5s infinite;
+        }
+        .sobran {
+            color: #43a047; /* Verde */
+        }
+        .produktua {
+            color: #1e88e5; /* Azul */
+        }
+        @keyframes pulse-agotado {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
     </style>
 </head>
 <body>
@@ -264,7 +302,6 @@
 
             let molRL, formulaRL, molRE, formulaRE, koefRL, koefRE;
 
-            // CORRECCIÓN DE LÓGICA
             if (ratio1 < ratio2) {
                 // Reactivo 1 es RL
                 molRL = molak1; formulaRL = formula1; koefRL = erreaktiboak[0].koefizientea;
@@ -272,7 +309,7 @@
             } else {
                 // Reactivo 2 es RL
                 molRL = molak2; formulaRL = formula2; koefRL = erreaktiboak[1].koefizientea;
-                molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; // CORREGIDO AQUÍ: formulaRE = formula1, koefRE = erreaktiboak[0].koefizientea
+                molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
             }
 
             // 5. CALCULAR RESULTADOS
@@ -386,26 +423,39 @@
             };
         }
 
+        // FUNCIÓN DE BISTARATZE MEJORADA
         function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
             const format = (num) => num.toFixed(3);
+            const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
+            const molSoberanStr = format(Math.max(0, molakSoberanRE));
 
+            // Actualizar resultados numéricos
             document.getElementById('em_izena').textContent = `${formulaRL}`;
             document.getElementById('se_izena').textContent = `${formulaRE}`;
-
-            if (molakSoberanRE > 0) {
-                 document.getElementById('se_kantitatea').textContent = 
-                    `${format(molakSoberanRE)} mol (${format(masaSoberanRE)} g)`;
-            } else {
-                 document.getElementById('se_kantitatea').textContent = '0.000 mol (Ez dago gehiegizkorik)';
-            }
-           
+            document.getElementById('se_kantitatea').textContent = 
+                molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
             document.getElementById('errendimendu_teorikoa').textContent = 
                 `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
 
-            document.getElementById('visualizazioa').innerHTML = 
-                `<strong>SIMULAZIOA AMAITUTA!</strong><br>
-                 Agortu da: <span class="rl-limitante">${formulaRL}</span> (Erreaktibo Mugatzailea)<br>
-                 Soberan geratu da: <span style="color: #43a047; font-weight: bold;">${formulaRE}</span>`;
+            // Generar contenido para la visualización simbólica
+            let htmlSimulazioa = `
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRL}</span>
+                    <span class="simulazio-egoera agotado">❌ AGORTU DA (EM)</span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRE}</span>
+                    <span class="simulazio-egoera ${molakSoberanRE > 0 ? 'sobran' : 'agotado'}">
+                        ${molakSoberanRE > 0 ? `✅ SOBERAN DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
+                    </span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${produktuarenFormula}</span>
+                    <span class="simulazio-egoera produktua">➡️ SORTUA (${format(molakProduktua)} mol)</span>
+                </div>
+            `;
+            
+            document.getElementById('visualizazioa').innerHTML = htmlSimulazioa;
         }
     </script>
 
