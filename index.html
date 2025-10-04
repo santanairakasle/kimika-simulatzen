@@ -162,4 +162,303 @@
             <h3>Hasierako Kantitateak</h3>
 
             <label for="erreaktibo1_kantitatea">1. Erreaktiboa:</label>
-            <input type="number" id="
+            <input type="number" id="erreaktibo1_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo1_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+                <option value="mililitroak">Mililitroak (ml)</option>
+                <option value="litroak">Litroak (L)</option>
+            </select>
+            
+            <div class="input-inline">
+                <div>
+                    <label for="erreaktibo1_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
+                    <input type="number" id="erreaktibo1_dentsitatea" placeholder="1.0" min="0">
+                </div>
+                <div>
+                    <label for="erreaktibo1_pureza">Purutasuna (%, aukerakoa):</label>
+                    <input type="number" id="erreaktibo1_pureza" placeholder="100" min="0" max="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="erreaktibo2_kantitatea">2. Erreaktiboa:</label>
+            <input type="number" id="erreaktibo2_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo2_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+                <option value="mililitroak">Mililitroak (ml)</option>
+                <option value="litroak">Litroak (L)</option>
+            </select>
+            
+            <div class="input-inline">
+                <div>
+                    <label for="erreaktibo2_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
+                    <input type="number" id="erreaktibo2_dentsitatea" placeholder="1.0" min="0">
+                </div>
+                <div>
+                    <label for="erreaktibo2_pureza">Purutasuna (%, aukerakoa):</label>
+                    <input type="number" id="erreaktibo2_pureza" placeholder="100" min="0" max="100">
+                </div>
+            </div>
+        </div>
+
+        <button onclick="hasiSimulazioa()">Hasi Simulazioa</button>
+
+        <h2>2. Simulazioa</h2>
+        <div id="visualizazioa">
+            Kargatu hasierako datuak simulazioa ikusteko...
+        </div>
+
+        <h2>3. Emaitzak eta Kalkuluak</h2>
+
+        <div class="input-group" id="emaitzak_panela">
+            <div class="resultado-item">
+                <label>Erreaktibo Mugatzailea (EM):</label>
+                <p id="em_izena" class="resultado-valor rl-limitante">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>Soberan dagoen Erreaktiboa (SE):</label>
+                <p id="se_izena">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>SE-ren Geratzen den Kantitatea:</label>
+                <p id="se_kantitatea" class="resultado-valor">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>Produktuaren Etekina Teorikoa:</label>
+                <p id="errendimendu_teorikoa" class="resultado-valor">...</p>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // 1. CONSTANTES Y BASES DE DATOS
+        
+        const MASAS_ATOMICAS = {
+            'H': 1.008, 'He': 4.003, 'Li': 6.94, 'Be': 9.012, 'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999,
+            'F': 18.998, 'Ne': 20.180, 'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
+            'S': 32.06, 'Cl': 35.45, 'Ar': 39.948, 'K': 39.098, 'Ca': 40.078, 'Fe': 55.845, 'Cu': 63.546,
+            'I': 126.904, 'Br': 79.904, 
+        };
+
+        const MASA_MOLAR_CACHE = {}; 
+
+        // 2. FUNCIÓN PRINCIPAL DE SIMULACIÓN
+
+        function hasiSimulazioa() {
+            // 2.1. Recoger datos de la ecuación
+            const ekuazioaStr = document.getElementById('ekuazioa').value.trim();
+            
+            // 2.2. Recoger datos del Reactivo 1
+            const kant1 = parseFloat(document.getElementById('erreaktibo1_kantitatea').value);
+            const unitate1 = document.getElementById('erreaktibo1_unitatea').value;
+            const dentsitate1Str = document.getElementById('erreaktibo1_dentsitatea').value;
+            const pureza1Str = document.getElementById('erreaktibo1_pureza').value;
+            
+            // 2.3. Recoger datos del Reactivo 2
+            const kant2 = parseFloat(document.getElementById('erreaktibo2_kantitatea').value);
+            const unitate2 = document.getElementById('erreaktibo2_unitatea').value;
+            const dentsitate2Str = document.getElementById('erreaktibo2_dentsitatea').value;
+            const pureza2Str = document.getElementById('erreaktibo2_pureza').value;
+
+            // Limpieza de datos opcionales
+            const dentsitate1 = dentsitate1Str ? parseFloat(dentsitate1Str) : null;
+            const pureza1 = pureza1Str ? parseFloat(pureza1Str) : 100; 
+            const dentsitate2 = dentsitate2Str ? parseFloat(dentsitate2Str) : null;
+            const pureza2 = pureza2Str ? parseFloat(pureza2Str) : 100;
+            
+            // Validaciones básicas
+            document.getElementById('visualizazioa').textContent = 'Kargatzen...';
+            if (isNaN(kant1) || isNaN(kant2) || kant1 <= 0 || kant2 <= 0 || pureza1 > 100 || pureza2 > 100 || pureza1 < 0 || pureza2 < 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Sartu kantitate, dentsitate eta purutasuna balio positiboak (purutasuna 0 eta 100 artean).'; return;
+            }
+
+            // Parsear Ecuación
+            const { erreaktiboak, produktuak } = parseEkuazioa(ekuazioaStr);
+            // El mensaje de error también se mantiene con "orekatuta" para que el usuario sepa que el problema es del balanceo, aunque use la palabra "doituta"
+            if (erreaktiboak.length !== 2 || produktuak.length === 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Ekuazio formatu okerra (A + B -> C). Konprobatu ekuazioa doituta dagoela.'; return;
+            }
+
+            // 3. OBTENER MASAS MOLARES Y CALCULAR MOLES
+            const formula1 = erreaktiboak[0].formula;
+            const masaMolar1 = kalkulatuMasaMolarra(formula1);
+            const molak1 = kalkulatuMolak(masaMolar1, kant1, unitate1, dentsitate1, pureza1);
+
+            const formula2 = erreaktiboak[1].formula;
+            const masaMolar2 = kalkulatuMasaMolarra(formula2);
+            const molak2 = kalkulatuMolak(masaMolar2, kant2, unitate2, dentsitate2, pureza2);
+            
+            if (molak1 === null || molak2 === null) {
+                document.getElementById('visualizazioa').textContent = `Errorea: Ezin da kantitatea mol bihurtu. Konprobatu elementu kimikoak zuzen idatzita daudela eta MASAS_ATOMICAS datu-basean daudela.`; 
+                return;
+            }
+
+            // 4. IDENTIFICAR EL REACTIVO LIMITANTE (EM)
+            const ratio1 = molak1 / erreaktiboak[0].koefizientea;
+            const ratio2 = molak2 / erreaktiboak[1].koefizientea;
+
+            let molRL, formulaRL, molRE, formulaRE, koefRL, koefRE;
+
+            if (ratio1 < ratio2) {
+                // Reactivo 1 es RL
+                molRL = molak1; formulaRL = formula1; koefRL = erreaktiboak[0].koefizientea;
+                molRE = molak2; formulaRE = formula2; koefRE = erreaktiboak[1].koefizientea;
+            } else {
+                // Reactivo 2 es RL
+                molRL = molak2; formulaRL = formula2; koefRL = erreaktiboak[1].koefizientea;
+                molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
+            }
+
+            // 5. CALCULAR RESULTADOS
+            const molakKontsumituRE = (molRL * koefRE) / koefRL;
+            const molakSoberanRE = molRE - molakKontsumituRE;
+            
+            const masaMolarRE = kalkulatuMasaMolarra(formulaRE);
+            const masaSoberanRE = molakSoberanRE * (masaMolarRE || 0);
+
+            const produktuarenFormula = produktuak[0].formula;
+            const koefProduktua = produktuak[0].koefizientea;
+            
+            const masaMolarProduktua = kalkulatuMasaMolarra(produktuarenFormula);
+            
+            if (!masaMolarProduktua) {
+                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra ezin da kalkulatu ${produktuarenFormula}-rentzat.`; return;
+            }
+
+            const molakProduktua = (molRL * koefProduktua) / koefRL;
+            const masaProduktua = molakProduktua * masaMolarProduktua;
+
+            // 6. BISTARATU EMAITZAK (Mostrar Resultados)
+            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula);
+        }
+
+        // 7. FUNTZIO OSAGARRIAK
+        
+        /**
+         * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza y densidad).
+         */
+        function kalkulatuMolak(masaMolar, kantitatea, unitatea, dentsitatea, pureza) {
+            
+            if (unitatea === 'molak') {
+                return kantitatea * (pureza / 100);
+            }
+            
+            if (!masaMolar) return null;
+
+            let masaGramoak = 0;
+
+            if (unitatea === 'gramoak') {
+                masaGramoak = kantitatea;
+            } else if (unitatea === 'mililitroak' || unitatea === 'litroak') {
+                if (dentsitatea === null || isNaN(dentsitatea) || dentsitatea <= 0) {
+                    alert('Errorea: Bolumena aukeratu duzu, baina dentsitatea (g/mL) ez da sartu edo ez da balioduna.');
+                    return null;
+                }
+                
+                let bolumenaML = (unitatea === 'litroak') ? kantitatea * 1000 : kantitatea;
+                masaGramoak = bolumenaML * dentsitatea;
+            } else {
+                return null;
+            }
+
+            // Aplicar pureza a la masa total
+            const masaPurua = masaGramoak * (pureza / 100);
+
+            return masaPurua / masaMolar;
+        }
+
+        /**
+         * Analiza una fórmula química y calcula su masa molar.
+         */
+        function kalkulatuMasaMolarra(formula) {
+            if (MASA_MOLAR_CACHE[formula]) return MASA_MOLAR_CACHE[formula];
+
+            const regex = /([A-Z][a-z]*)(\d*)/g;
+            let masaMolar = 0;
+            let match;
+            let isValid = true;
+
+            while ((match = regex.exec(formula)) !== null) {
+                const elementSymbol = match[1];
+                const subscript = match[2] === '' ? 1 : parseInt(match[2]);
+                const atomicMass = MASAS_ATOMICAS[elementSymbol];
+
+                if (!atomicMass) {
+                    isValid = false;
+                    break; 
+                }
+                masaMolar += atomicMass * subscript;
+            }
+
+            if (!isValid || masaMolar === 0) return null;
+
+            MASA_MOLAR_CACHE[formula] = masaMolar;
+            return masaMolar;
+        }
+
+        // Función de parseo de la ecuación (Mantenida)
+        function parseEkuazioa(ekuazioaStr) {
+            const parts = ekuazioaStr.split('->');
+            if (parts.length !== 2) return { erreaktiboak: [], produktuak: [] };
+
+            const parsePart = (partStr) => {
+                return partStr.split('+').map(item => {
+                    item = item.trim();
+                    const match = item.match(/^(\d*)(\D.*)$/);
+                    let koefizientea = 1;
+                    let formula = item;
+                    if (match) {
+                        koefizientea = match[1] === '' ? 1 : parseInt(match[1]);
+                        formula = match[2].trim();
+                    }
+                    return { koefizientea, formula };
+                });
+            };
+            return {
+                erreaktiboak: parsePart(parts[0].trim()),
+                produktuak: parsePart(parts[1].trim())
+            };
+        }
+
+        // FUNCIÓN DE BISTARATZE MEJORADA
+        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
+            const format = (num) => num.toFixed(3);
+            const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
+            const molSoberanStr = format(Math.max(0, molakSoberanRE));
+
+            // Actualizar resultados numéricos
+            document.getElementById('em_izena').textContent = `${formulaRL}`;
+            document.getElementById('se_izena').textContent = `${formulaRE}`;
+            document.getElementById('se_kantitatea').textContent = 
+                molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
+            document.getElementById('errendimendu_teorikoa').textContent = 
+                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
+
+            // Generar contenido para la visualización simbólica
+            let htmlSimulazioa = `
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRL}</span>
+                    <span class="simulazio-egoera agotado">❌ AGORTU DA (EM)</span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRE}</span>
+                    <span class="simulazio-egoera ${molakSoberanRE > 0 ? 'sobran' : 'agotado'}">
+                        ${molakSoberanRE > 0 ? `✅ SOBERAN DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
+                    </span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${produktuarenFormula}</span>
+                    <span class="simulazio-egoera produktua">➡️ SORTUA (${format(molakProduktua)} mol)</span>
+                </div>
+            `;
+            
+            document.getElementById('visualizazioa').innerHTML = htmlSimulazioa;
+        }
+    </script>
+
+</body>
+</html>
