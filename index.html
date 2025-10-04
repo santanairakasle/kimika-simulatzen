@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muga-Erreakzioa: Erreaktibo Mugatzailea</title>
+    <style>
+        /* ======================================== */
+        /* ESTILOS BÁSICOS (CSS) */
+        /* ======================================== */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff; /* Azul primario */
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #28a745; /* Verde */
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        .input-group, .resultado-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+        select {
+             width: 100%; /* Para que ocupe todo el espacio si está solo */
+             margin-top: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #visualizazioa {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 100px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #666;
+            border: 1px dashed #adb5bd;
+        }
+        .resultado-valor {
+            font-weight: bold;
+            color: #dc3545; /* Rojo para el límite */
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Muga-Erreakzioa 🧪</h1>
+        <p style="text-align: center; font-style: italic;">Erreaktibo mugatzailea identifikatzeko simulatzailea</p>
+
+        <h2>1. Erreakzioaren Konfigurazioa</h2>
+
+        <div class="input-group">
+            <label for="ekuazioa">Ekuazio Kimikoa (Adib.: N2 + 3H2 -> 2NH3)</label>
+            <input type="text" id="ekuazioa" placeholder="Idatzi ekuazioa orekatua hemen..." value="N2 + 3H2 -> 2NH3">
+            <button id="oreka_btn">Ekuazioa Orekatuta dago?</button>
+        </div>
+
+        <div class="input-group">
+            <h3>Hasierako Kantitateak</h3>
+
+            <label for="erreaktibo1_kantitatea">1. Erreaktiboa (lehenengoa):</label>
+            <input type="number" id="erreaktibo1_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo1_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+             <label for="erreaktibo2_kantitatea">2. Erreaktiboa (bigarrena):</label>
+            <input type="number" id="erreaktibo2_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo2_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+            </select>
+        </div>
+
+        <button id="hasi_simulazioa_btn">Hasi Simulazioa</button>
+
+        <h2>2. Bistaratze Interaktiboa</h2>
+        <div id="visualizazioa">
+            Kargatu hasierako datuak simulazioa ikusteko...
+        </div>
+
+        <h2>3. Emaitzak eta Kalkuluak</h2>
+
+        <div class="input-group" id="emaitzak_panela">
+            <div class="resultado-item">
+                <label>Erreaktibo Mugatzailea (EM):</label>
+                <p id="em_izena" class="resultado-valor">...</p>
+            </div>
+            
+            <div class="resultado-item">
+                <label>Soberan dagoen Erreaktiboa (SE):</label>
+                <p id="se_izena">...</p>
+            </div>
+
+            <div class="resultado-item">
+                <label>SE-ren Geratzen den Kantitatea:</label>
+                <p id="se_kantitatea" class="resultado-valor">...</p>
+            </div>
+
+            <div class="resultado-item">
+                <label>Produktuaren Errendimendu Teorikoa:</label>
+                <p id="errendimendu_teorikoa" class="resultado-valor">...</p>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        // 1. CONSTANTES Y DATOS QUÍMICOS SIMPLIFICADOS
+        // ¡IMPORTANTE! Añadir o modificar las masas molares aquí si cambias la reacción.
+        const MASAS_MOLARES = {
+            'N2': 28.01,   // Nitrógeno
+            'H2': 2.02,    // Hidrógeno
+            'NH3': 17.03,  // Amoníaco
+            'O2': 32.00,   // Oxígeno
+            'H2O': 18.02,  // Agua
+            'Fe': 55.85,   // Hierro
+            'S': 32.07,    // Azufre
+            'FeS': 87.92,  // Sulfuro de Hierro (ejemplo para Fe + S -> FeS)
+        };
+
+        // 2. FUNCIÓN PRINCIPAL DE SIMULACIÓN
+        document.getElementById('hasi_simulazioa_btn').addEventListener('click', hasiSimulazioa);
+
+        function hasiSimulazioa() {
+            // 2.1. Recoger datos de la interfaz
+            const ekuazioaStr = document.getElementById('ekuazioa').value.trim();
+            const kant1 = parseFloat(document.getElementById('erreaktibo1_kantitatea').value);
+            const unitate1 = document.getElementById('erreaktibo1_unitatea').value;
+            const kant2 = parseFloat(document.getElementById('erreaktibo2_kantitatea').value);
+            const unitate2 = document.getElementById('erreaktibo2_unitatea').value;
+
+            // Reiniciar resultados
+            document.getElementById('em_izena').textContent = '...';
+            document.getElementById('se_izena').textContent = '...';
+            document.getElementById('se_kantitatea').textContent = '...';
+            document.getElementById('errendimendu_teorikoa').textContent = '...';
+            document.getElementById('visualizazioa').textContent = 'Kargatzen...';
+
+            if (isNaN(kant1) || isNaN(kant2) || kant1 <= 0 || kant2 <= 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Sartu kantitate positiboak.';
+                return;
+            }
+
+            // 2.2. Parsear y Balancear la Ecuación (Simplificado: asume 2 reactivos y ekuación balanceada)
+            const { erreaktiboak, produktuak } = parseEkuazioa(ekuazioaStr);
+
+            if (erreaktiboak.length !== 2 || produktuak.length === 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Ekuazioa ez da balioduna. Erabili formatua: A + B -> C (adib.: N2 + 3H2 -> 2NH3).';
+                return;
+            }
+
+            // 2.3. CALCULAR MOLES INICIALES
+            const molak1 = kalkulatuMolak(erreaktiboak[0].formula, kant1, unitate1);
+            const molak2 = kalkulatuMolak(erreaktiboak[1].formula, kant2, unitate2);
+            
+            if (molak1 === null || molak2 === null) {
+                document.getElementById('visualizazioa').textContent = `Errorea: Masa molarra falta da ${erreaktiboak[0].formula} edo ${erreaktiboak[1].formula}-rentzat. Gehitu MASAS_MOLARES datu-basera.`;
+                return;
+            }
+
+            // 2.4. IDENTIFICAR EL REACTIVO LIMITANTE (EM)
+            
+            // Ratio = Molak / Koefiziente Estekiometrikoa
+            const ratio1 = molak1 / erreaktiboak[0].koefizientea;
+            const ratio2 = molak2 / erreaktiboak[1].koefizientea;
+
+            let molRL, formulaRL, molRE, formulaRE, koefRL, koefRE;
+
+            if (ratio1 < ratio2) {
+                // Erreaktibo 1 da mugatzailea
+                molRL = molak1; formulaRL = erreaktiboak[0].formula; koefRL = erreaktiboak[0].koefizientea;
+                molRE = molak2; formulaRE = erreaktiboak[1].formula; koefRE = erreaktiboak[1].koefizientea;
+            } else {
+                // Erreaktibo 2 da mugatzailea
+                molRL = molak2; formulaRL = erreaktiboak[1].formula; koefRL = erreaktiboak[1].koefizientea;
+                molRE = molak1; formulaRE = erreaktiboak[0].formula; koefRE = erreaktiboak[0].koefizientea;
+            }
+
+            // 2.5. CALCULAR RESULTADOS
+
+            // a) Molak Kontsumitu RE (Reactivo Exceso)
+            const molakKontsumituRE = (molRL * koefRE) / koefRL;
+
+            // b) Molak Soberan RE
+            const molakSoberanRE = molRE - molakKontsumituRE;
+            const masaMolarRE = MASAS_MOLARES[formulaRE];
+            const masaSoberanRE = molakSoberanRE * masaMolarRE;
+
+            // c) Rendimiento Teórico Producto Principal
+            const produktuarenFormula = produktuak[0].formula;
+            const koefProduktua = produktuak[0].koefizientea;
+            const masaMolarProduktua = MASAS_MOLARES[produktuarenFormula];
+            
+            if (!masaMolarProduktua) {
+                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra falta da ${produktuarenFormula}-rentzat.`;
+                return;
+            }
+
+            const molakProduktua = (molRL * koefProduktua) / koefRL;
+            const masaProduktua = molakProduktua * masaMolarProduktua;
+
+
+            // 2.6. BISTARATU EMAITZAK (Mostrar Resultados)
+            bistaratuEmaitzak(
+                formulaRL, 
+                formulaRE, 
+                molakSoberanRE, 
+                masaSoberanRE, 
+                molakProduktua, 
+                masaProduktua, 
+                produktuarenFormula
+            );
+        }
+
+        // =======================================================
+        // 3. FUNTZIO OSAGARRIAK (Funciones Auxiliares)
+        // =======================================================
+
+        function kalkulatuMolak(formula, kantitatea, unitatea) {
+            if (unitatea === 'molak') return kantitatea;
+            const masaMolar = MASAS_MOLARES[formula];
+            if (!masaMolar) return null; 
+            return kantitatea / masaMolar;
+        }
+
+        function parseEkuazioa(ekuazioaStr) {
+            const parts = ekuazioaStr.split('->');
+            if (parts.length !== 2) return { erreaktiboak: [], produktuak: [] };
+
+            const parsePart = (partStr) => {
+                return partStr.split('+').map(item => {
+                    item = item.trim();
+                    const match = item.match(/^(\d*)(\D.*)$/);
+                    
+                    let koefizientea = 1;
+                    let formula = item;
+
+                    if (match) {
+                        koefizientea = match[1] === '' ? 1 : parseInt(match[1]);
+                        formula = match[2].trim();
+                    }
+                    return { koefizientea, formula };
+                });
+            };
+
+            return {
+                erreaktiboak: parsePart(parts[0].trim()),
+                produktuak: parsePart(parts[1].trim())
+            };
+        }
+
+        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
+            const format = (num) => num.toFixed(3);
+
+            document.getElementById('em_izena').textContent = `${formulaRL}`;
+            document.getElementById('se_izena').textContent = `${formulaRE}`;
+
+            if (molakSoberanRE > 0) {
+                 document.getElementById('se_kantitatea').textContent = 
+                    `${format(molakSoberanRE)} mol (${format(masaSoberanRE)} g)`;
+            } else {
+                 document.getElementById('se_kantitatea').textContent = '0.000 mol (Ez dago gehiegizkorik)';
+            }
+           
+            document.getElementById('errendimendu_teorikoa').textContent = 
+                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
+
+            document.getElementById('visualizazioa').innerHTML = 
+                `<strong>SIMULAZIOA AMAITUTA!</strong><br>
+                 Agortu da: <span style="color: #dc3545; font-weight: bold;">${formulaRL}</span> (Erreaktibo Mugatzailea)<br>
+                 Soberan geratu da: <span style="color: #28a745; font-weight: bold;">${formulaRE}</span>`;
+        }
+
+        // Función de ejemplo para el botón de "Orekatuta dago?"
+        document.getElementById('oreka_btn').addEventListener('click', function() {
+            alert('Funtzio honek ekuazioa orekatuta dagoen aztertu beharko luke, baina logika hori konplexua da. Oraingoz, sartu orekatutako ekuazioak.');
+        });
+    </script>
+
+</body>
+</html>
