@@ -226,6 +226,10 @@
                 <label>GE-ren Geratzen den Kantitatea:</label>
                 <p id="se_kantitatea" class="resultado-valor">...</p>
             </div>
+            <div class="resultado-item">
+                <label>Sortzen den Produktua:</label>
+                <p id="produktuaren_kantitatea" class="resultado-valor"></p>
+            </div>
         </div>
         
     </div>
@@ -308,23 +312,32 @@
                 molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
             }
 
-            // 5. CALCULAR RESULTADOS (SOLO EXCESO)
+            // 5. CALCULAR RESULTADOS (EXCESO Y PRODUCTO)
+            
+            // Exceso
             const molakKontsumituRE = (molRL * koefRE) / koefRL;
             const molakSoberanRE = molRE - molakKontsumituRE;
-            
             const masaMolarRE = kalkulatuMasaMolarra(formulaRE);
             const masaSoberanRE = molakSoberanRE * (masaMolarRE || 0);
 
-            // 6. OBTENER INFORMACIÓN DEL PRODUCTO PARA VISUALIZACIÓN
+            // Producto (Sortzen den Produktua)
             const produktuarenFormula = produktuak[0].formula;
             const koefProduktua = produktuak[0].koefizientea;
-            const molakProduktua = (molRL * koefProduktua) / koefRL;
+            const masaMolarProduktua = kalkulatuMasaMolarra(produktuarenFormula);
+            
+            if (!masaMolarProduktua) {
+                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra ezin da kalkulatu ${produktuarenFormula}-rentzat.`; return;
+            }
 
-            // 7. BISTARATU EMAITZAK (Mostrar Resultados)
-            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, produktuarenFormula);
+            const molakProduktua = (molRL * koefProduktua) / koefRL;
+            const masaProduktua = molakProduktua * masaMolarProduktua;
+
+
+            // 6. BISTARATU EMAITZAK (Mostrar Resultados)
+            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula);
         }
 
-        // 8. FUNTZIO OSAGARRIAK
+        // 7. FUNTZIO OSAGARRIAK
         
         /**
          * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza y densidad).
@@ -413,17 +426,20 @@
         }
 
         // FUNCIÓN DE BISTARATZE MEJORADA 
-        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, produktuarenFormula) {
+        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
             const format = (num) => num.toFixed(3);
             const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
             const molSoberanStr = format(Math.max(0, molakSoberanRE));
 
             // Actualizar resultados numéricos
             document.getElementById('em_izena').textContent = `${formulaRL}`;
-            // Mantiene SE (Soberan/Soberakina) en el JS para la ID, pero el texto visual es "Gehiegizkoa"
             document.getElementById('se_izena').textContent = `${formulaRE}`; 
             document.getElementById('se_kantitatea').textContent = 
                 molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
+            
+            // Actualizar cantidad de producto
+            document.getElementById('produktuaren_kantitatea').textContent =
+                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
 
             // Generar contenido para la visualización simbólica
             let htmlSimulazioa = `
@@ -439,7 +455,7 @@
                 </div>
                 <div class="simulazio-linea">
                     <span class="simulazio-izena">${produktuarenFormula}</span>
-                    <span class="simulazio-egoera produktua">➡️ SORTU DA (Produktua)</span>
+                    <span class="simulazio-egoera produktua">➡️ SORTU DA (${format(molakProduktua)} mol)</span>
                 </div>
             `;
             
