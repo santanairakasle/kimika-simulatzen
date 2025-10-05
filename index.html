@@ -219,14 +219,14 @@
                 <p id="em_izena" class="resultado-valor rl-limitante">...</p>
             </div>
             <div class="resultado-item">
-                <label>Soberan dagoen Erreaktiboa (SE):</label>
+                <label>Gehiegizko erreaktiboa (GE):</label>
                 <p id="se_izena">...</p>
             </div>
             <div class="resultado-item">
-                <label>SE-ren Geratzen den Kantitatea:</label>
+                <label>GE-ren Geratzen den Kantitatea:</label>
                 <p id="se_kantitatea" class="resultado-valor">...</p>
             </div>
-            </div>
+        </div>
         
     </div>
 
@@ -412,7 +412,7 @@
             };
         }
 
-        // FUNCIÓN DE BISTARATZE MEJORADA (sin rendimiento teórico)
+        // FUNCIÓN DE BISTARATZE MEJORADA 
         function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, produktuarenFormula) {
             const format = (num) => num.toFixed(3);
             const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
@@ -420,7 +420,8 @@
 
             // Actualizar resultados numéricos
             document.getElementById('em_izena').textContent = `${formulaRL}`;
-            document.getElementById('se_izena').textContent = `${formulaRE}`;
+            // Mantiene SE (Soberan/Soberakina) en el JS para la ID, pero el texto visual es "Gehiegizkoa"
+            document.getElementById('se_izena').textContent = `${formulaRE}`; 
             document.getElementById('se_kantitatea').textContent = 
                 molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
 
@@ -433,7 +434,7 @@
                 <div class="simulazio-linea">
                     <span class="simulazio-izena">${formulaRE}</span>
                     <span class="simulazio-egoera ${molakSoberanRE > 0 ? 'sobran' : 'agotado'}">
-                        ${molakSoberanRE > 0 ? `✅ SOBERAN DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
+                        ${molakSoberanRE > 0 ? `✅ GEHIEGIZKOA DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
                     </span>
                 </div>
                 <div class="simulazio-linea">
