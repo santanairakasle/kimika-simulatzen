@@ -241,7 +241,8 @@
             'H': 1.008, 'He': 4.003, 'Li': 6.94, 'Be': 9.012, 'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999,
             'F': 18.998, 'Ne': 20.180, 'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
             'S': 32.06, 'Cl': 35.45, 'Ar': 39.948, 'K': 39.098, 'Ca': 40.078, 'Fe': 55.845, 'Cu': 63.546,
-            'I': 126.904, 'Br': 79.904, 
+            'I': 126.904, 'Br': 79.904, 'Ba': 137.33, // Añadido Ba (por si acaso)
+            'S': 32.06, 'P': 30.974, // Asegurar S y P están
         };
 
         const MASA_MOLAR_CACHE = {}; 
@@ -373,17 +374,52 @@
         }
 
         /**
-         * Analiza una fórmula química y calcula su masa molar.
+         * Analiza una fórmula química, incluyendo paréntesis, y calcula su masa molar.
+         * ESTA ES LA FUNCIÓN MEJORADA
+         * @param {string} formula La fórmula química (ej: Ca(OH)2, N2)
+         * @returns {number | null} La masa molar o null si hay un error
          */
         function kalkulatuMasaMolarra(formula) {
             if (MASA_MOLAR_CACHE[formula]) return MASA_MOLAR_CACHE[formula];
 
-            const regex = /([A-Z][a-z]*)(\d*)/g;
             let masaMolar = 0;
-            let match;
             let isValid = true;
+            
+            // Paso 1: Reemplazar paréntesis por su contenido expandido
+            let formulaExpandida = formula;
+            
+            // Expresión regular para encontrar el patrón (elementos)subíndice (ej: (OH)2)
+            const parentesisRegex = /\(([A-Za-z0-9]+)\)(\d+)/g;
 
-            while ((match = regex.exec(formula)) !== null) {
+            // Iterar hasta que no queden paréntesis con subíndices
+            while (parentesisRegex.test(formulaExpandida)) {
+                formulaExpandida = formulaExpandida.replace(parentesisRegex, (match, contenido, subindiceStr) => {
+                    const subindice = parseInt(subindiceStr);
+                    if (isNaN(subindice)) return match; 
+                    
+                    let contenidoExpandido = "";
+                    
+                    // Buscamos elementos individuales dentro del paréntesis (ej: O, H2)
+                    const elementoInternoRegex = /([A-Z][a-z]*)(\d*)/g;
+                    let matchInterno;
+                    
+                    while ((matchInterno = elementoInternoRegex.exec(contenido)) !== null) {
+                        const simbolo = matchInterno[1];
+                        const subindiceInterno = matchInterno[2] === '' ? 1 : parseInt(matchInterno[2]);
+                        
+                        // Nuevo subíndice = subíndice_interno * subíndice_externo
+                        const nuevoSubindice = subindiceInterno * subindice;
+                        contenidoExpandido += simbolo + (nuevoSubindice > 1 ? nuevoSubindice : '');
+                    }
+                    return contenidoExpandido;
+                });
+            }
+
+            // Paso 2: Calcular la masa molar de la fórmula expandida (sin paréntesis)
+            const regexFinal = /([A-Z][a-z]*)(\d*)/g;
+            let match;
+            
+            while ((match = regexFinal.exec(formulaExpandida)) !== null) {
                 const elementSymbol = match[1];
                 const subscript = match[2] === '' ? 1 : parseInt(match[2]);
                 const atomicMass = MASAS_ATOMICAS[elementSymbol];
