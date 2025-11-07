@@ -1,503 +1,523 @@
 <!DOCTYPE html>
 <html lang="eu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Erreaktibo mugatzailea: Simulazioa</title>
-    <style>
-        /* ======================================== */
-        /* ESTILOS CSS CON FONDO ROSA CLARO (#fce4ec) */
-        /* ======================================== */
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background-color: #fce4ec; /* Rosa claro */
-            color: #333; 
-        }
-        .container { 
-            max-width: 900px; 
-            margin: 20px auto; 
-            background-color: #fff; 
-            padding: 25px; 
-            border-radius: 10px; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
-        }
-        h1 { 
-            color: #d81b60; 
-            text-align: center; 
-            border-bottom: 2px solid #d81b60; 
-            padding-bottom: 10px; 
-            margin-bottom: 20px; 
-        }
-        h2 { 
-            color: #43a047; 
-            border-bottom: 1px solid #ddd; 
-            padding-bottom: 5px; 
-            margin-top: 25px; 
-        }
-        .input-group, .resultado-item { 
-            margin-bottom: 15px; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-        }
-        label { 
-            display: block; 
-            margin-bottom: 5px; 
-            font-weight: bold; 
-        }
-        input[type="text"], input[type="number"], select { 
-            width: calc(100% - 22px); 
-            padding: 10px; 
-            border: 1px solid #ddd; 
-            border-radius: 4px; 
-            box-sizing: border-box; 
-            margin-top: 5px; 
-        }
-        select { 
-             width: 100%; 
-             margin-top: 5px; 
-        }
-        button { 
-            background-color: #d81b60; 
-            color: white; 
-            padding: 10px 15px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            transition: background-color 0.3s; 
-            margin-top: 10px; 
-        }
-        button:hover { 
-            background-color: #c2185b; 
-        }
-        #visualizazioa { 
-            background-color: #f8bbd0; 
-            padding: 20px; 
-            border-radius: 8px; 
-            min-height: 80px; 
-            margin-top: 20px; 
-            font-size: 1.1em; 
-            color: #666; 
-            border: 1px dashed #d81b60; 
-            display: flex; /* Añadido para la nueva estructura */
-            flex-direction: column;
-            gap: 10px;
-        }
-        .resultado-valor { 
-            font-weight: bold; 
-            color: #1e88e5; 
-            font-size: 1.1em; 
-        }
-        .rl-limitante {
-            color: #d81b60; 
-            font-weight: bold;
-        }
-        .input-inline {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .input-inline div {
-            flex: 1;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreaktibo mugatzailea: Simulazioa</title>
+    <style>
+        /* ======================================== */
+        /* ESTILOS CSS CON FONDO ROSA CLARO (#fce4ec) */
+        /* ======================================== */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #fce4ec; /* Rosa claro */
+            color: #333; 
+        }
+        .container { 
+            max-width: 900px; 
+            margin: 20px auto; 
+            background-color: #fff; 
+            padding: 25px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+        }
+        h1 { 
+            color: #d81b60; 
+            text-align: center; 
+            border-bottom: 2px solid #d81b60; 
+            padding-bottom: 10px; 
+            margin-bottom: 20px; 
+        }
+        h2 { 
+            color: #43a047; 
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 5px; 
+            margin-top: 25px; 
+        }
+        .input-group, .resultado-item { 
+            margin-bottom: 15px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+        }
+        input[type="text"], input[type="number"], select { 
+            width: calc(100% - 22px); 
+            padding: 10px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            margin-top: 5px; 
+        }
+        select { 
+             width: 100%; 
+             margin-top: 5px; 
+        }
+        button { 
+            background-color: #d81b60; 
+            color: white; 
+            padding: 10px 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            transition: background-color 0.3s; 
+            margin-top: 10px; 
+        }
+        button:hover { 
+            background-color: #c2185b; 
+        }
+        #visualizazioa { 
+            background-color: #f8bbd0; 
+            padding: 20px; 
+            border-radius: 8px; 
+            min-height: 80px; 
+            margin-top: 20px; 
+            font-size: 1.1em; 
+            color: #666; 
+            border: 1px dashed #d81b60; 
+            display: flex; /* Añadido para la nueva estructura */
+            flex-direction: column;
+            gap: 10px;
+        }
+        .resultado-valor { 
+            font-weight: bold; 
+            color: #1e88e5; 
+            font-size: 1.1em; 
+        }
+        .rl-limitante {
+            color: #d81b60; 
+            font-weight: bold;
+        }
+        .input-inline {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .input-inline div {
+            flex: 1;
+        }
 
-        /* ESTILOS PARA LA SIMULACIÓN SIMBÓLICA */
-        .simulazio-linea {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px dotted #d81b60;
-            font-weight: bold;
-        }
-        .simulazio-linea:last-child {
-            border-bottom: none;
-        }
-        .simulazio-izena {
-            flex: 1;
-            text-align: left;
-            padding-left: 10px;
-        }
-        .simulazio-egoera {
-            flex: 1;
-            text-align: right;
-            padding-right: 10px;
-        }
-        .agotado {
-            color: #d81b60; /* Rojo/Rosa oscuro */
-            animation: pulse-agotado 1.5s infinite;
-        }
-        .sobran {
-            color: #43a047; /* Verde */
-        }
-        .produktua {
-            color: #1e88e5; /* Azul */
-        }
-        @keyframes pulse-agotado {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        /* ESTILOS PARA LA SIMULACIÓN SIMBÓLICA */
+        .simulazio-linea {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dotted #d81b60;
+            font-weight: bold;
+        }
+        .simulazio-linea:last-child {
+            border-bottom: none;
+        }
+        .simulazio-izena {
+            flex: 1;
+            text-align: left;
+            padding-left: 10px;
+        }
+        .simulazio-egoera {
+            flex: 1;
+            text-align: right;
+            padding-right: 10px;
+        }
+        .agotado {
+            color: #d81b60; /* Rojo/Rosa oscuro */
+            animation: pulse-agotado 1.5s infinite;
+        }
+        .sobran {
+            color: #43a047; /* Verde */
+        }
+        .produktua {
+            color: #1e88e5; /* Azul */
+        }
+        @keyframes pulse-agotado {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
 
-    </style>
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Erreaktibo mugatzailea 🧪</h1>
-        <p style="text-align: center; font-style: italic;">Erreakzio kimikoen simulazioa eta kalkulua</p>
+    <div class="container">
+        <h1>Erreaktibo mugatzailea 🧪</h1>
+        <p style="text-align: center; font-style: italic;">Erreakzio kimikoen simulazioa eta kalkulua</p>
 
-        <h2>1. Erreakzioaren Konfigurazioa</h2>
+        <h2>1. Erreakzioaren Konfigurazioa</h2>
 
-        <div class="input-group">
-            <label for="ekuazioa">Ekuazio Kimikoa (Adib.: N2 + 3H2 -> 2NH3)</label>
-            <input type="text" id="ekuazioa" placeholder="Idatzi ekuazioa doituta hemen..." value="N2 + 3H2 -> 2NH3">
-            <button onclick="alert('Garrantzitsua: Simulazioa egiteko, Ekuazio Kimikoa DOITUTA sartu behar da. Egiaztatu zuk zeuk koefizienteak zuzenak direla.')">Ekuazioa Doituta dago?</button>
-        </div>
+        <div class="input-group">
+            <label for="ekuazioa">Ekuazio Kimikoa (Adib.: N2 + 3H2 -> 2NH3)</label>
+            <input type="text" id="ekuazioa" placeholder="Idatzi ekuazioa doituta hemen..." value="N2 + 3H2 -> 2NH3">
+            <button onclick="alert('Garrantzitsua: Simulazioa egiteko, Ekuazio Kimikoa DOITUTA sartu behar da. Egiaztatu zuk zeuk koefizienteak zuzenak direla.')">Ekuazioa Doituta dago?</button>
+        </div>
 
-        <div class="input-group">
-            <h3>Hasierako Kantitateak</h3>
+        <div class="input-group">
+            <h3>Hasierako Kantitateak</h3>
 
-            <label for="erreaktibo1_kantitatea">1. Erreaktiboa:</label>
-            <input type="number" id="erreaktibo1_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
-            <select id="erreaktibo1_unitatea">
-                <option value="gramoak">Gramoak (g)</option>
-                <option value="molak">Molak (mol)</option>
-                <option value="mililitroak">Mililitroak (ml)</option>
-                <option value="litroak">Litroak (L)</option>
-            </select>
-            
-            <div class="input-inline">
+            <label for="erreaktibo1_kantitatea">1. Erreaktiboa:</label>
+            <input type="number" id="erreaktibo1_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo1_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+                <option value="mililitroak">Mililitroak (ml)</option>
+                <option value="litroak">Litroak (L)</option>
+            </select>
+            
+            <div class="input-inline">
+                <div>
+                    <label for="erreaktibo1_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
+                    <input type="number" id="erreaktibo1_dentsitatea" placeholder="1.0" min="0">
+                </div>
                 <div>
-                    <label for="erreaktibo1_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
-                    <input type="number" id="erreaktibo1_dentsitatea" placeholder="1.0" min="0">
-                </div>
+                    <label for="erreaktibo1_molaritatea">Molaritatea (mol/L, aukerakoa):</label>
+                    <input type="number" id="erreaktibo1_molaritatea" placeholder="0.1" min="0">
+                </div>
+                <div>
+                    <label for="erreaktibo1_pureza">Purutasuna (%, aukerakoa):</label>
+                    <input type="number" id="erreaktibo1_pureza" placeholder="100" min="0" max="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="erreaktibo2_kantitatea">2. Erreaktiboa:</label>
+            <input type="number" id="erreaktibo2_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
+            <select id="erreaktibo2_unitatea">
+                <option value="gramoak">Gramoak (g)</option>
+                <option value="molak">Molak (mol)</option>
+                <option value="mililitroak">Mililitroak (ml)</option>
+                <option value="litroak">Litroak (L)</option>
+            </select>
+            
+            <div class="input-inline">
+                <div>
+                    <label for="erreaktibo2_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
+                    <input type="number" id="erreaktibo2_dentsitatea" placeholder="1.0" min="0">
+                </div>
                 <div>
-                    <label for="erreaktibo1_pureza">Purutasuna (%, aukerakoa):</label>
-                    <input type="number" id="erreaktibo1_pureza" placeholder="100" min="0" max="100">
-                </div>
-            </div>
-        </div>
+                    <label for="erreaktibo2_molaritatea">Molaritatea (mol/L, aukerakoa):</label>
+                    <input type="number" id="erreaktibo2_molaritatea" placeholder="0.1" min="0">
+                </div>
+                <div>
+                    <label for="erreaktibo2_pureza">Purutasuna (%, aukerakoa):</label>
+                    <input type="number" id="erreaktibo2_pureza" placeholder="100" min="0" max="100">
+                </div>
+            </div>
+        </div>
 
-        <div class="input-group">
-            <label for="erreaktibo2_kantitatea">2. Erreaktiboa:</label>
-            <input type="number" id="erreaktibo2_kantitatea" placeholder="Sartu kantitatea" value="10" min="0">
-            <select id="erreaktibo2_unitatea">
-                <option value="gramoak">Gramoak (g)</option>
-                <option value="molak">Molak (mol)</option>
-                <option value="mililitroak">Mililitroak (ml)</option>
-                <option value="litroak">Litroak (L)</option>
-            </select>
-            
-            <div class="input-inline">
-                <div>
-                    <label for="erreaktibo2_dentsitatea">Dentsitatea (g/mL, aukerakoa):</label>
-                    <input type="number" id="erreaktibo2_dentsitatea" placeholder="1.0" min="0">
-                </div>
-                <div>
-                    <label for="erreaktibo2_pureza">Purutasuna (%, aukerakoa):</label>
-                    <input type="number" id="erreaktibo2_pureza" placeholder="100" min="0" max="100">
-                </div>
-            </div>
-        </div>
+        <button onclick="hasiSimulazioa()">Hasi Simulazioa</button>
 
-        <button onclick="hasiSimulazioa()">Hasi Simulazioa</button>
+        <h2>2. Simulazioa</h2>
+        <div id="visualizazioa">
+            Kargatu hasierako datuak simulazioa ikusteko...
+        </div>
 
-        <h2>2. Simulazioa</h2>
-        <div id="visualizazioa">
-            Kargatu hasierako datuak simulazioa ikusteko...
-        </div>
+        <h2>3. Emaitzak eta Kalkuluak</h2>
 
-        <h2>3. Emaitzak eta Kalkuluak</h2>
+        <div class="input-group" id="emaitzak_panela">
+            <div class="resultado-item">
+                <label>Erreaktibo Mugatzailea (EM):</label>
+                <p id="em_izena" class="resultado-valor rl-limitante">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>Gehiegizko erreaktiboa (GE):</label>
+                <p id="se_izena">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>GE-ren Geratzen den Kantitatea:</label>
+                <p id="se_kantitatea" class="resultado-valor">...</p>
+            </div>
+            <div class="resultado-item">
+                <label>Sortzen den Produktua:</label>
+                <p id="produktuaren_kantitatea" class="resultado-valor"></p>
+            </div>
+        </div>
+        
+    </div>
 
-        <div class="input-group" id="emaitzak_panela">
-            <div class="resultado-item">
-                <label>Erreaktibo Mugatzailea (EM):</label>
-                <p id="em_izena" class="resultado-valor rl-limitante">...</p>
-            </div>
-            <div class="resultado-item">
-                <label>Gehiegizko erreaktiboa (GE):</label>
-                <p id="se_izena">...</p>
-            </div>
-            <div class="resultado-item">
-                <label>GE-ren Geratzen den Kantitatea:</label>
-                <p id="se_kantitatea" class="resultado-valor">...</p>
-            </div>
-            <div class="resultado-item">
-                <label>Sortzen den Produktua:</label>
-                <p id="produktuaren_kantitatea" class="resultado-valor"></p>
-            </div>
-        </div>
-        
-    </div>
+    <script>
+        // 1. CONSTANTES Y BASES DE DATOS
+        
+        const MASAS_ATOMICAS = {
+            'H': 1.008, 'He': 4.003, 'Li': 6.94, 'Be': 9.012, 'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999,
+            'F': 18.998, 'Ne': 20.180, 'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
+            'S': 32.06, 'Cl': 35.45, 'Ar': 39.948, 'K': 39.098, 'Ca': 40.078, 'Fe': 55.845, 'Cu': 63.546,
+            'I': 126.904, 'Br': 79.904, 'Ba': 137.33,
+            'S': 32.06, 'P': 30.974, 
+        };
 
-    <script>
-        // 1. CONSTANTES Y BASES DE DATOS
-        
-        const MASAS_ATOMICAS = {
-            'H': 1.008, 'He': 4.003, 'Li': 6.94, 'Be': 9.012, 'B': 10.81, 'C': 12.011, 'N': 14.007, 'O': 15.999,
-            'F': 18.998, 'Ne': 20.180, 'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
-            'S': 32.06, 'Cl': 35.45, 'Ar': 39.948, 'K': 39.098, 'Ca': 40.078, 'Fe': 55.845, 'Cu': 63.546,
-            'I': 126.904, 'Br': 79.904, 'Ba': 137.33, // Añadido Ba (por si acaso)
-            'S': 32.06, 'P': 30.974, // Asegurar S y P están
-        };
+        const MASA_MOLAR_CACHE = {}; 
 
-        const MASA_MOLAR_CACHE = {}; 
+        // 2. FUNCIÓN PRINCIPAL DE SIMULACIÓN
 
-        // 2. FUNCIÓN PRINCIPAL DE SIMULACIÓN
+        function hasiSimulazioa() {
+            // 2.1. Recoger datos de la ecuación
+            const ekuazioaStr = document.getElementById('ekuazioa').value.trim();
+            
+            // 2.2. Recoger datos del Reactivo 1
+            const kant1 = parseFloat(document.getElementById('erreaktibo1_kantitatea').value);
+            const unitate1 = document.getElementById('erreaktibo1_unitatea').value;
+            const dentsitate1Str = document.getElementById('erreaktibo1_dentsitatea').value;
+            const molaritatea1Str = document.getElementById('erreaktibo1_molaritatea').value;
+            const pureza1Str = document.getElementById('erreaktibo1_pureza').value;
+            
+            // 2.3. Recoger datos del Reactivo 2
+            const kant2 = parseFloat(document.getElementById('erreaktibo2_kantitatea').value);
+            const unitate2 = document.getElementById('erreaktibo2_unitatea').value;
+            const dentsitate2Str = document.getElementById('erreaktibo2_dentsitatea').value;
+            const molaritatea2Str = document.getElementById('erreaktibo2_molaritatea').value;
+            const pureza2Str = document.getElementById('erreaktibo2_pureza').value;
 
-        function hasiSimulazioa() {
-            // 2.1. Recoger datos de la ecuación
-            const ekuazioaStr = document.getElementById('ekuazioa').value.trim();
-            
-            // 2.2. Recoger datos del Reactivo 1
-            const kant1 = parseFloat(document.getElementById('erreaktibo1_kantitatea').value);
-            const unitate1 = document.getElementById('erreaktibo1_unitatea').value;
-            const dentsitate1Str = document.getElementById('erreaktibo1_dentsitatea').value;
-            const pureza1Str = document.getElementById('erreaktibo1_pureza').value;
-            
-            // 2.3. Recoger datos del Reactivo 2
-            const kant2 = parseFloat(document.getElementById('erreaktibo2_kantitatea').value);
-            const unitate2 = document.getElementById('erreaktibo2_unitatea').value;
-            const dentsitate2Str = document.getElementById('erreaktibo2_dentsitatea').value;
-            const pureza2Str = document.getElementById('erreaktibo2_pureza').value;
+            // Limpieza de datos opcionales
+            const dentsitate1 = dentsitate1Str ? parseFloat(dentsitate1Str) : null;
+            const molaritatea1 = molaritatea1Str ? parseFloat(molaritatea1Str) : null;
+            const pureza1 = pureza1Str ? parseFloat(pureza1Str) : 100; 
+            const dentsitate2 = dentsitate2Str ? parseFloat(dentsitate2Str) : null;
+            const molaritatea2 = molaritatea2Str ? parseFloat(molaritatea2Str) : null;
+            const pureza2 = pureza2Str ? parseFloat(pureza2Str) : 100;
+            
+            // Validaciones básicas
+            document.getElementById('visualizazioa').textContent = 'Kargatzen...';
+            if (isNaN(kant1) || isNaN(kant2) || kant1 <= 0 || kant2 <= 0 || pureza1 > 100 || pureza2 > 100 || pureza1 < 0 || pureza2 < 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Sartu kantitate, dentsitate, molaritate eta purutasuna balio positiboak (purutasuna 0 eta 100 artean).'; return;
+            }
 
-            // Limpieza de datos opcionales
-            const dentsitate1 = dentsitate1Str ? parseFloat(dentsitate1Str) : null;
-            const pureza1 = pureza1Str ? parseFloat(pureza1Str) : 100; 
-            const dentsitate2 = dentsitate2Str ? parseFloat(dentsitate2Str) : null;
-            const pureza2 = pureza2Str ? parseFloat(pureza2Str) : 100;
-            
-            // Validaciones básicas
-            document.getElementById('visualizazioa').textContent = 'Kargatzen...';
-            if (isNaN(kant1) || isNaN(kant2) || kant1 <= 0 || kant2 <= 0 || pureza1 > 100 || pureza2 > 100 || pureza1 < 0 || pureza2 < 0) {
-                document.getElementById('visualizazioa').textContent = 'Errorea: Sartu kantitate, dentsitate eta purutasuna balio positiboak (purutasuna 0 eta 100 artean).'; return;
-            }
+            // Parsear Ecuación
+            const { erreaktiboak, produktuak } = parseEkuazioa(ekuazioaStr);
+            if (erreaktiboak.length !== 2 || produktuak.length === 0) {
+                document.getElementById('visualizazioa').textContent = 'Errorea: Ekuazio formatu okerra (A + B -> C). Konprobatu ekuazioa doituta dagoela.'; return;
+            }
 
-            // Parsear Ecuación
-            const { erreaktiboak, produktuak } = parseEkuazioa(ekuazioaStr);
-            if (erreaktiboak.length !== 2 || produktuak.length === 0) {
-                document.getElementById('visualizazioa').textContent = 'Errorea: Ekuazio formatu okerra (A + B -> C). Konprobatu ekuazioa doituta dagoela.'; return;
-            }
+            // 3. OBTENER MASAS MOLARES Y CALCULAR MOLES
+            const formula1 = erreaktiboak[0].formula;
+            const masaMolar1 = kalkulatuMasaMolarra(formula1);
+            const molak1 = kalkulatuMolak(masaMolar1, kant1, unitate1, dentsitate1, molaritatea1, pureza1);
 
-            // 3. OBTENER MASAS MOLARES Y CALCULAR MOLES
-            const formula1 = erreaktiboak[0].formula;
-            const masaMolar1 = kalkulatuMasaMolarra(formula1);
-            const molak1 = kalkulatuMolak(masaMolar1, kant1, unitate1, dentsitate1, pureza1);
+            const formula2 = erreaktiboak[1].formula;
+            const masaMolar2 = kalkulatuMasaMolarra(formula2);
+            const molak2 = kalkulatuMolak(masaMolar2, kant2, unitate2, dentsitate2, molaritatea2, pureza2);
+            
+            if (molak1 === null || molak2 === null) {
+                document.getElementById('visualizazioa').textContent = `Errorea: Ezin da kantitatea mol bihurtu. Konprobatu elementu kimikoak zuzen idatzita daudela eta MASAS_ATOMICAS datu-basean daudela (edo dentsitate/molaritate balioak).`; 
+                return;
+            }
 
-            const formula2 = erreaktiboak[1].formula;
-            const masaMolar2 = kalkulatuMasaMolarra(formula2);
-            const molak2 = kalkulatuMolak(masaMolar2, kant2, unitate2, dentsitate2, pureza2);
-            
-            if (molak1 === null || molak2 === null) {
-                document.getElementById('visualizazioa').textContent = `Errorea: Ezin da kantitatea mol bihurtu. Konprobatu elementu kimikoak zuzen idatzita daudela eta MASAS_ATOMICAS datu-basean daudela.`; 
-                return;
-            }
+            // 4. IDENTIFICAR EL REACTIVO LIMITANTE (EM)
+            const ratio1 = molak1 / erreaktiboak[0].koefizientea;
+            const ratio2 = molak2 / erreaktiboak[1].koefizientea;
 
-            // 4. IDENTIFICAR EL REACTIVO LIMITANTE (EM)
-            const ratio1 = molak1 / erreaktiboak[0].koefizientea;
-            const ratio2 = molak2 / erreaktiboak[1].koefizientea;
+            let molRL, formulaRL, molRE, formulaRE, koefRL, koefRE;
 
-            let molRL, formulaRL, molRE, formulaRE, koefRL, koefRE;
+            if (ratio1 < ratio2) {
+                // Reactivo 1 es RL
+                molRL = molak1; formulaRL = formula1; koefRL = erreaktiboak[0].koefizientea;
+                molRE = molak2; formulaRE = formula2; koefRE = erreaktiboak[1].koefizientea;
+            } else {
+                // Reactivo 2 es RL
+                molRL = molak2; formulaRL = formula2; koefRL = erreaktiboak[1].koefizientea;
+                molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
+            }
 
-            if (ratio1 < ratio2) {
-                // Reactivo 1 es RL
-                molRL = molak1; formulaRL = formula1; koefRL = erreaktiboak[0].koefizientea;
-                molRE = molak2; formulaRE = formula2; koefRE = erreaktiboak[1].koefizientea;
-            } else {
-                // Reactivo 2 es RL
-                molRL = molak2; formulaRL = formula2; koefRL = erreaktiboak[1].koefizientea;
-                molRE = molak1; formulaRE = formula1; koefRE = erreaktiboak[0].koefizientea; 
-            }
+            // 5. CALCULAR RESULTADOS (EXCESO Y PRODUCTO)
+            
+            // Exceso
+            const molakKontsumituRE = (molRL * koefRE) / koefRL;
+            const molakSoberanRE = molRE - molakKontsumituRE;
+            const masaMolarRE = kalkulatuMasaMolarra(formulaRE);
+            const masaSoberanRE = molakSoberanRE * (masaMolarRE || 0);
 
-            // 5. CALCULAR RESULTADOS (EXCESO Y PRODUCTO)
-            
-            // Exceso
-            const molakKontsumituRE = (molRL * koefRE) / koefRL;
-            const molakSoberanRE = molRE - molakKontsumituRE;
-            const masaMolarRE = kalkulatuMasaMolarra(formulaRE);
-            const masaSoberanRE = molakSoberanRE * (masaMolarRE || 0);
+            // Producto (Sortzen den Produktua)
+            const produktuarenFormula = produktuak[0].formula;
+            const koefProduktua = produktuak[0].koefizientea;
+            const masaMolarProduktua = kalkulatuMasaMolarra(produktuarenFormula);
+            
+            if (!masaMolarProduktua) {
+                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra ezin da kalkulatu ${produktuarenFormula}-rentzat.`; return;
+            }
 
-            // Producto (Sortzen den Produktua)
-            const produktuarenFormula = produktuak[0].formula;
-            const koefProduktua = produktuak[0].koefizientea;
-            const masaMolarProduktua = kalkulatuMasaMolarra(produktuarenFormula);
-            
-            if (!masaMolarProduktua) {
-                 document.getElementById('visualizazioa').textContent = `Errorea: Produktuaren masa molarra ezin da kalkulatu ${produktuarenFormula}-rentzat.`; return;
-            }
-
-            const molakProduktua = (molRL * koefProduktua) / koefRL;
-            const masaProduktua = molakProduktua * masaMolarProduktua;
+            const molakProduktua = (molRL * koefProduktua) / koefRL;
+            const masaProduktua = molakProduktua * masaMolarProduktua;
 
 
-            // 6. BISTARATU EMAITZAK (Mostrar Resultados)
-            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula);
-        }
+            // 6. BISTARATU EMAITZAK (Mostrar Resultados)
+            bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula);
+        }
 
-        // 7. FUNTZIO OSAGARRIAK
-        
-        /**
-         * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza y densidad).
-         */
-        function kalkulatuMolak(masaMolar, kantitatea, unitatea, dentsitatea, pureza) {
-            
-            if (unitatea === 'molak') {
-                return kantitatea * (pureza / 100);
-            }
-            
-            if (!masaMolar) return null;
+        // 7. FUNTZIO OSAGARRIAK
+        
+        /**
+         * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza, densidad y molaridad).
+         */
+        function kalkulatuMolak(masaMolar, kantitatea, unitatea, dentsitatea, molaritatea, pureza) {
+                
+                if (unitatea === 'molak') {
+                    // El valor ya está en moles, aplicar pureza si es necesario.
+                    return kantitatea * (pureza / 100);
+                }
+                
+                let bolumenaLitroak = 0;
+                let masaGramoak = 0;
 
-            let masaGramoak = 0;
+                if (unitatea === 'litroak' || unitatea === 'mililitroak') {
+                    bolumenaLitroak = (unitatea === 'litroak') ? kantitatea : kantitatea / 1000;
+                   
+                    if (molaritatea !== null && molaritatea > 0) {
+                        // PRIORIDAD: USAR MOLARIDAD: n = M * V (moles = Molaridad * Volumen en L)
+                        return bolumenaLitroak * molaritatea; 
+                    } 
+                   
+                    // Si no hay molaridad, volvemos a la lógica de Densidad
+                    if (dentsitatea === null || isNaN(dentsitatea) || dentsitatea <= 0) {
+                        alert('Errorea: Bolumena aukeratu duzu, baina ez da Dentsitatea (g/mL) EZ Molaritatea (mol/L) sartu edo ez da balioduna.');
+                        return null;
+                    }
 
-            if (unitatea === 'gramoak') {
-                masaGramoak = kantitatea;
-            } else if (unitatea === 'mililitroak' || unitatea === 'litroak') {
-                if (dentsitatea === null || isNaN(dentsitatea) || dentsitatea <= 0) {
-                    alert('Errorea: Bolumena aukeratu duzu, baina dentsitatea (g/mL) ez da sartu edo ez da balioduna.');
-                    return null;
-                }
-                
-                let bolumenaML = (unitatea === 'litroak') ? kantitatea * 1000 : kantitatea;
-                masaGramoak = bolumenaML * dentsitatea;
-            } else {
-                return null;
-            }
+                    // CÁLCULO con DENSIDAD (n = (ρ * V) / MM)
+                    let bolumenaML = (unitatea === 'litroak') ? kantitatea * 1000 : kantitatea;
+                    masaGramoak = bolumenaML * dentsitatea;
+                   
+                } else if (unitatea === 'gramoak') {
+                    masaGramoak = kantitatea;
+                } else {
+                    return null;
+                }
 
-            // Aplicar pureza a la masa total
-            const masaPurua = masaGramoak * (pureza / 100);
+                // Convertir a Moles (para unidades de Masa o Densidad)
+                if (!masaMolar) return null;
 
-            return masaPurua / masaMolar;
-        }
+                // Aplicar pureza a la masa total (solo si no se usó Molaridad)
+                const masaPurua = masaGramoak * (pureza / 100);
 
-        /**
-         * Analiza una fórmula química, incluyendo paréntesis, y calcula su masa molar.
-         * ESTA ES LA FUNCIÓN MEJORADA
-         * @param {string} formula La fórmula química (ej: Ca(OH)2, N2)
-         * @returns {number | null} La masa molar o null si hay un error
-         */
-        function kalkulatuMasaMolarra(formula) {
-            if (MASA_MOLAR_CACHE[formula]) return MASA_MOLAR_CACHE[formula];
+                return masaPurua / masaMolar;
+        }
 
-            let masaMolar = 0;
-            let isValid = true;
-            
-            // Paso 1: Reemplazar paréntesis por su contenido expandido
-            let formulaExpandida = formula;
-            
-            // Expresión regular para encontrar el patrón (elementos)subíndice (ej: (OH)2)
-            const parentesisRegex = /\(([A-Za-z0-9]+)\)(\d+)/g;
+        /**
+         * Analiza una fórmula química, incluyendo paréntesis, y calcula su masa molar.
+         * @param {string} formula La fórmula química (ej: Ca(OH)2, N2)
+         * @returns {number | null} La masa molar o null si hay un error
+         */
+        function kalkulatuMasaMolarra(formula) {
+            if (MASA_MOLAR_CACHE[formula]) return MASA_MOLAR_CACHE[formula];
 
-            // Iterar hasta que no queden paréntesis con subíndices
-            while (parentesisRegex.test(formulaExpandida)) {
-                formulaExpandida = formulaExpandida.replace(parentesisRegex, (match, contenido, subindiceStr) => {
-                    const subindice = parseInt(subindiceStr);
-                    if (isNaN(subindice)) return match; 
-                    
-                    let contenidoExpandido = "";
-                    
-                    // Buscamos elementos individuales dentro del paréntesis (ej: O, H2)
-                    const elementoInternoRegex = /([A-Z][a-z]*)(\d*)/g;
-                    let matchInterno;
-                    
-                    while ((matchInterno = elementoInternoRegex.exec(contenido)) !== null) {
-                        const simbolo = matchInterno[1];
-                        const subindiceInterno = matchInterno[2] === '' ? 1 : parseInt(matchInterno[2]);
-                        
-                        // Nuevo subíndice = subíndice_interno * subíndice_externo
-                        const nuevoSubindice = subindiceInterno * subindice;
-                        contenidoExpandido += simbolo + (nuevoSubindice > 1 ? nuevoSubindice : '');
-                    }
-                    return contenidoExpandido;
-                });
-            }
+            let masaMolar = 0;
+            let isValid = true;
+            
+            // Paso 1: Reemplazar paréntesis por su contenido expandido
+            let formulaExpandida = formula;
+            
+            const parentesisRegex = /\(([A-Za-z0-9]+)\)(\d+)/g;
 
-            // Paso 2: Calcular la masa molar de la fórmula expandida (sin paréntesis)
-            const regexFinal = /([A-Z][a-z]*)(\d*)/g;
-            let match;
-            
-            while ((match = regexFinal.exec(formulaExpandida)) !== null) {
-                const elementSymbol = match[1];
-                const subscript = match[2] === '' ? 1 : parseInt(match[2]);
-                const atomicMass = MASAS_ATOMICAS[elementSymbol];
+            while (parentesisRegex.test(formulaExpandida)) {
+                formulaExpandida = formulaExpandida.replace(parentesisRegex, (match, contenido, subindiceStr) => {
+                    const subindice = parseInt(subindiceStr);
+                    if (isNaN(subindice)) return match; 
+                    
+                    let contenidoExpandido = "";
+                    
+                    const elementoInternoRegex = /([A-Z][a-z]*)(\d*)/g;
+                    let matchInterno;
+                    
+                    while ((matchInterno = elementoInternoRegex.exec(contenido)) !== null) {
+                        const simbolo = matchInterno[1];
+                        const subindiceInterno = matchInterno[2] === '' ? 1 : parseInt(matchInterno[2]);
+                        
+                        const nuevoSubindice = subindiceInterno * subindice;
+                        contenidoExpandido += simbolo + (nuevoSubindice > 1 ? nuevoSubindice : '');
+                    }
+                    return contenidoExpandido;
+                });
+            }
 
-                if (!atomicMass) {
-                    isValid = false;
-                    break; 
-                }
-                masaMolar += atomicMass * subscript;
-            }
+            // Paso 2: Calcular la masa molar de la fórmula expandida (sin paréntesis)
+            const regexFinal = /([A-Z][a-z]*)(\d*)/g;
+            let match;
+            
+            while ((match = regexFinal.exec(formulaExpandida)) !== null) {
+                const elementSymbol = match[1];
+                const subscript = match[2] === '' ? 1 : parseInt(match[2]);
+                const atomicMass = MASAS_ATOMICAS[elementSymbol];
 
-            if (!isValid || masaMolar === 0) return null;
+                if (!atomicMass) {
+                    isValid = false;
+                    break; 
+                }
+                masaMolar += atomicMass * subscript;
+            }
 
-            MASA_MOLAR_CACHE[formula] = masaMolar;
-            return masaMolar;
-        }
+            if (!isValid || masaMolar === 0) return null;
 
-        // Función de parseo de la ecuación (Mantenida)
-        function parseEkuazioa(ekuazioaStr) {
-            const parts = ekuazioaStr.split('->');
-            if (parts.length !== 2) return { erreaktiboak: [], produktuak: [] };
+            MASA_MOLAR_CACHE[formula] = masaMolar;
+            return masaMolar;
+        }
 
-            const parsePart = (partStr) => {
-                return partStr.split('+').map(item => {
-                    item = item.trim();
-                    const match = item.match(/^(\d*)(\D.*)$/);
-                    let koefizientea = 1;
-                    let formula = item;
-                    if (match) {
-                        koefizientea = match[1] === '' ? 1 : parseInt(match[1]);
-                        formula = match[2].trim();
-                    }
-                    return { koefizientea, formula };
-                });
-            };
-            return {
-                erreaktiboak: parsePart(parts[0].trim()),
-                produktuak: parsePart(parts[1].trim())
-            };
-        }
+        // Función de parseo de la ecuación (Mantenida)
+        function parseEkuazioa(ekuazioaStr) {
+            const parts = ekuazioaStr.split('->');
+            if (parts.length !== 2) return { erreaktiboak: [], produktuak: [] };
 
-        // FUNCIÓN DE BISTARATZE MEJORADA 
-        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
-            const format = (num) => num.toFixed(3);
-            const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
-            const molSoberanStr = format(Math.max(0, molakSoberanRE));
+            const parsePart = (partStr) => {
+                return partStr.split('+').map(item => {
+                    item = item.trim();
+                    const match = item.match(/^(\d*)(\D.*)$/);
+                    let koefizientea = 1;
+                    let formula = item;
+                    if (match) {
+                        koefizientea = match[1] === '' ? 1 : parseInt(match[1]);
+                        formula = match[2].trim();
+                    }
+                    return { koefizientea, formula };
+                });
+            };
+            return {
+                erreaktiboak: parsePart(parts[0].trim()),
+                produktuak: parsePart(parts[1].trim())
+            };
+        }
 
-            // Actualizar resultados numéricos
-            document.getElementById('em_izena').textContent = `${formulaRL}`;
-            document.getElementById('se_izena').textContent = `${formulaRE}`; 
-            document.getElementById('se_kantitatea').textContent = 
-                molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
-            
-            // Actualizar cantidad de producto
-            document.getElementById('produktuaren_kantitatea').textContent =
-                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
+        // FUNCIÓN DE BISTARATZE MEJORADA 
+        function bistaratuEmaitzak(formulaRL, formulaRE, molakSoberanRE, masaSoberanRE, molakProduktua, masaProduktua, produktuarenFormula) {
+            const format = (num) => num.toFixed(3);
+            const masaSoberanStr = molakSoberanRE > 0 ? `(${format(masaSoberanRE)} g)` : '';
+            const molSoberanStr = format(Math.max(0, molakSoberanRE));
 
-            // Generar contenido para la visualización simbólica
-            let htmlSimulazioa = `
-                <div class="simulazio-linea">
-                    <span class="simulazio-izena">${formulaRL}</span>
-                    <span class="simulazio-egoera agotado">❌ AGORTU DA (EM)</span>
-                </div>
-                <div class="simulazio-linea">
-                    <span class="simulazio-izena">${formulaRE}</span>
-                    <span class="simulazio-egoera ${molakSoberanRE > 0 ? 'sobran' : 'agotado'}">
-                        ${molakSoberanRE > 0 ? `✅ GEHIEGIZKOA DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
-                    </span>
-                </div>
-                <div class="simulazio-linea">
-                    <span class="simulazio-izena">${produktuarenFormula}</span>
-                    <span class="simulazio-egoera produktua">➡️ SORTU DA (${format(molakProduktua)} mol)</span>
-                </div>
-            `;
-            
-            document.getElementById('visualizazioa').innerHTML = htmlSimulazioa;
-        }
-    </script>
+            // Actualizar resultados numéricos
+            document.getElementById('em_izena').textContent = `${formulaRL}`;
+            document.getElementById('se_izena').textContent = `${formulaRE}`; 
+            document.getElementById('se_kantitatea').textContent = 
+                molakSoberanRE > 0 ? `${molSoberanStr} mol ${masaSoberanStr}` : '0.000 mol (Ez dago gehiegizkorik)';
+            
+            // Actualizar cantidad de producto
+            document.getElementById('produktuaren_kantitatea').textContent =
+                `${format(molakProduktua)} mol ${produktuarenFormula} (${format(masaProduktua)} g)`;
+
+            // Generar contenido para la visualización simbólica
+            let htmlSimulazioa = `
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRL}</span>
+                    <span class="simulazio-egoera agotado">❌ AGORTU DA (EM)</span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${formulaRE}</span>
+                    <span class="simulazio-egoera ${molakSoberanRE > 0 ? 'sobran' : 'agotado'}">
+                        ${molakSoberanRE > 0 ? `✅ GEHIEGIZKOA DAGO (${molSoberanStr} mol)` : '❌ ERE AGORTU DA (Stoichiometric)'}
+                    </span>
+                </div>
+                <div class="simulazio-linea">
+                    <span class="simulazio-izena">${produktuarenFormula}</span>
+                    <span class="simulazio-egoera produktua">➡️ SORTU DA (${format(molakProduktua)} mol)</span>
+                </div>
+            `;
+            
+            document.getElementById('visualizazioa').innerHTML = htmlSim
+}
+    </script>
 
 </body>
 </html>
