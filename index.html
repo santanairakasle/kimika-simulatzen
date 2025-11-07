@@ -6,7 +6,7 @@
     <title>Erreaktibo mugatzailea: Simulazioa</title>
     <style>
         /* ======================================== */
-        /* ESTILOS CSS CON FONDO ROSA CLARO (#fce4ec) */
+        /* ESTILOS CSS */
         /* ======================================== */
         body { 
             font-family: Arial, sans-serif; 
@@ -82,7 +82,7 @@
             font-size: 1.1em; 
             color: #666; 
             border: 1px dashed #d81b60; 
-            display: flex; /* Añadido para la nueva estructura */
+            display: flex;
             flex-direction: column;
             gap: 10px;
         }
@@ -250,7 +250,6 @@
             'F': 18.998, 'Ne': 20.180, 'Na': 22.990, 'Mg': 24.305, 'Al': 26.982, 'Si': 28.085, 'P': 30.974,
             'S': 32.06, 'Cl': 35.45, 'Ar': 39.948, 'K': 39.098, 'Ca': 40.078, 'Fe': 55.845, 'Cu': 63.546,
             'I': 126.904, 'Br': 79.904, 'Ba': 137.33,
-            'S': 32.06, 'P': 30.974, 
         };
 
         const MASA_MOLAR_CACHE = {}; 
@@ -356,47 +355,47 @@
          * Convierte la cantidad de entrada a moles (maneja g, mol, ml, L, con pureza, densidad y molaridad).
          */
         function kalkulatuMolak(masaMolar, kantitatea, unitatea, dentsitatea, molaritatea, pureza) {
-                
-                if (unitatea === 'molak') {
-                    // El valor ya está en moles, aplicar pureza si es necesario.
-                    return kantitatea * (pureza / 100);
-                }
-                
-                let bolumenaLitroak = 0;
-                let masaGramoak = 0;
+                   
+            if (unitatea === 'molak') {
+                // El valor ya está en moles, aplicar pureza si es necesario.
+                return kantitatea * (pureza / 100);
+            }
+                   
+            let masaGramoak = 0; // Para cálculos de masa (g) y densidad/volumen
 
-                if (unitatea === 'litroak' || unitatea === 'mililitroak') {
-                    bolumenaLitroak = (unitatea === 'litroak') ? kantitatea : kantitatea / 1000;
-                   
-                    if (molaritatea !== null && molaritatea > 0) {
-                        // PRIORIDAD: USAR MOLARIDAD: n = M * V (moles = Molaridad * Volumen en L)
-                        return bolumenaLitroak * molaritatea; 
-                    } 
-                   
-                    // Si no hay molaridad, volvemos a la lógica de Densidad
-                    if (dentsitatea === null || isNaN(dentsitatea) || dentsitatea <= 0) {
-                        alert('Errorea: Bolumena aukeratu duzu, baina ez da Dentsitatea (g/mL) EZ Molaritatea (mol/L) sartu edo ez da balioduna.');
-                        return null;
-                    }
+            if (unitatea === 'litroak' || unitatea === 'mililitroak') {
+                const bolumenaLitroak = (unitatea === 'litroak') ? kantitatea : kantitatea / 1000;
+                
+                if (molaritatea !== null && molaritatea > 0) {
+                    // PRIORIDAD: USAR MOLARIDAD: n = M * V (moles = Molaridad * Volumen en L)
+                    return bolumenaLitroak * molaritatea; 
+                } 
+                
+                // Si no hay molaridad, volvemos a la lógica de Densidad
+                if (dentsitatea === null || isNaN(dentsitatea) || dentsitatea <= 0) {
+                    alert('Errorea: Bolumena aukeratu duzu, baina ez da Dentsitatea (g/mL) EZ Molaritatea (mol/L) sartu edo ez da balioduna.');
+                    return null;
+                }
 
-                    // CÁLCULO con DENSIDAD (n = (ρ * V) / MM)
-                    let bolumenaML = (unitatea === 'litroak') ? kantitatea * 1000 : kantitatea;
-                    masaGramoak = bolumenaML * dentsitatea;
-                   
-                } else if (unitatea === 'gramoak') {
-                    masaGramoak = kantitatea;
-                } else {
-                    return null;
-                }
+                // CÁLCULO con DENSIDAD (m = ρ * V)
+                let bolumenaML = (unitatea === 'litroak') ? kantitatea * 1000 : kantitatea;
+                masaGramoak = bolumenaML * dentsitatea;
+                
+            } else if (unitatea === 'gramoak') {
+                masaGramoak = kantitatea;
+            } else {
+                return null;
+            }
 
-                // Convertir a Moles (para unidades de Masa o Densidad)
-                if (!masaMolar) return null;
+            // Convertir a Moles (para unidades de Masa o Densidad)
+            if (!masaMolar) return null;
 
-                // Aplicar pureza a la masa total (solo si no se usó Molaridad)
-                const masaPurua = masaGramoak * (pureza / 100);
+            // Aplicar pureza a la masa total (solo si no se usó Molaridad)
+            const masaPurua = masaGramoak * (pureza / 100);
 
-                return masaPurua / masaMolar;
+            return masaPurua / masaMolar; // n = masa_pura / masa_molar
         }
+
 
         /**
          * Analiza una fórmula química, incluyendo paréntesis, y calcula su masa molar.
@@ -515,8 +514,8 @@
                 </div>
             `;
             
-            document.getElementById('visualizazioa').innerHTML = htmlSim
-}
+            document.getElementById('visualizazioa').innerHTML = htmlSimulazioa;
+        }
     </script>
 
 </body>
